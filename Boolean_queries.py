@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import re
 import nltk
 import sys
@@ -21,7 +22,13 @@ params:
     queries_file:       file of boolean queries
     output_file:        responses to boolean queries
 """
-def search(dictionary_file, postings_file, queries_file, output_file):
+
+def search(document_directory, dictionary_file, postings_file, queries_file, output_file):
+    docs_list = [docs for docs in os.listdir(document_directory)]
+    n = [i for i in range(len(docs_list))]
+    doc_dict = dict(zip(n, docs_list))
+
+    
     # open files
     dict_file = codecs.open(dictionary_file, encoding='utf-8')
     post_file = io.open(postings_file, 'rb')
@@ -41,10 +48,10 @@ def search(dictionary_file, postings_file, queries_file, output_file):
         result = process_query(query, dictionary, post_file, indexed_docIDs)
         # write each result to output
         for j in range(len(result)):
-            docID = str(result[j])
+            docID = result[j]
+            out_file.write(doc_dict[docID])
             if (j != len(result) - 1):
-                docID += ' '
-            out_file.write(docID)
+                out_file.write(', ')
         if (i != len(queries_list) - 1):
             out_file.write('\n')
 
@@ -87,7 +94,6 @@ params:
     query:          the query string e.g. 'bill OR Gates AND (vista OR XP) AND NOT mac'
     dictionary:     the dictionary in memory
     indexed_docIDs: the list of all docIDs indexed (used for negations)
-
 """
 def process_query(query, dictionary, post_file, indexed_docIDs):
     stemmer = nltk.stem.porter.PorterStemmer() # instantiate stemmer
@@ -322,34 +328,41 @@ def boolean_AND(left_operand, right_operand):
 
     return result
 
+if __name__ == '__main__':
+    search(document_directory = 'D:\Python_projects\Files',
+           dictionary_file = 'D:\Python_projects\dictionary.json', 
+           postings_file = 'D:\Python_projects\postings_file.json', 
+           queries_file = 'D:\Python_projects\queries.json' , 
+           output_file = 'D:\Python_projects\output.json')
+
 """
 prints the proper command usage
 """
-def print_usage():
-    print ("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
+# def print_usage():
+#     print ("usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results")
 
-dictionary_file = postings_file = queries_file = output_file = None
-try:
-    opts, args = getopt.getopt(sys.argv[1:], 'd:p:q:o:')
-except (getopt.GetoptError, err):
-    usage()
-    sys.exit(2)
-for o, a in opts:
-    if o == '-d':
-        dictionary_file = a
-    elif o == '-p':
-        postings_file = a
-    elif o == '-q':
-        queries_file = a
-    elif o == '-o':
-        output_file = a
-    else:
-        assert False, "unhandled option"
-if (dictionary_file == None or postings_file == None or queries_file == None or output_file == None):
-    print_usage()
-    sys.exit(2)
+# dictionary_file = postings_file = queries_file = output_file = None
+# try:
+#     opts, args = getopt.getopt(sys.argv[1:], 'd:p:q:o:')
+# except (getopt.GetoptError, err):
+#     usage()
+#     sys.exit(2)
+# for o, a in opts:
+#     if o == '-d':
+#         dictionary_file = a
+#     elif o == '-p':
+#         postings_file = a
+#     elif o == '-q':
+#         queries_file = a
+#     elif o == '-o':
+#         output_file = a
+#     else:
+#         assert False, "unhandled option"
+# if (dictionary_file == None or postings_file == None or queries_file == None or output_file == None):
+#     print_usage()
+#     sys.exit(2)
 
-if (RECORD_TIME): start = timeit.default_timer()                    # start time
-search(dictionary_file, postings_file, queries_file, output_file)   # call the search engine on queries
-if (RECORD_TIME): stop = timeit.default_timer()                     # stop time
-if (RECORD_TIME): print ('Querying time:' + str(stop - start))      # print time taken
+# if (RECORD_TIME): start = timeit.default_timer()                    # start time
+# search(dictionary_file, postings_file, queries_file, output_file)   # call the search engine on queries
+# if (RECORD_TIME): stop = timeit.default_timer()                     # stop time
+# if (RECORD_TIME): print ('Querying time:' + str(stop - start))      # print time taken
