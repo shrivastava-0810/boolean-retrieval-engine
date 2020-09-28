@@ -22,10 +22,17 @@ params:
     dictionary_file:    dictionary of terms
     postings_file:      postings file for all terms in dictionary
 """
+
 def index(document_directory, dictionary_file, postings_file):
     # preprocess docID list
-    docID_list = [int(docID_string) for docID_string in os.listdir(document_directory)]
-    docID_list.sort()
+    docs_list = [docs for docs in os.listdir(document_directory)]
+    n = [i for i in range(len(docs_list))]
+    doc_dict = dict(zip(n, docs_list))
+
+    # docID_list = [int(docID_string) for docID_string in os.listdir(document_directory)]
+    # docID_list.sort()
+    
+    docID_list = list(doc_dict.keys())
 
     stemmer = nltk.stem.porter.PorterStemmer()
     stopwords = nltk.corpus.stopwords.words('english')
@@ -35,7 +42,7 @@ def index(document_directory, dictionary_file, postings_file):
     # for each document in corpus
     for docID in docID_list:
         if (LIMIT and docs_indexed == LIMIT): break
-        file_path = os.path.join(document_directory, str(docID))
+        file_path = os.path.join(document_directory, doc_dict[docID])
         
         # if valid document
         if (os.path.isfile(file_path)):
@@ -109,38 +116,43 @@ def is_number(token):
     except ValueError:
         return False
 
+if __name__ == '__main__':
+    index(document_directory = 'D:\Python_projects\Files', 
+          dictionary_file = 'D:\Python_projects\dictionary.json',
+          postings_file = 'D:\Python_projects\postings_file.json')
+
 """
 prints the proper command usage
 """
-def print_usage():
-    print ("usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file")
+# def print_usage():
+#     print ("usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file")
 
-document_directory = dictionary_file = postings_file = None
-try:
-    opts, args = getopt.getopt(sys.argv[1:], 'i:d:p:')
+# document_directory = dictionary_file = postings_file = None
+# try:
+#     opts, args = getopt.getopt(sys.argv[1:], 'i:d:p:')
 
-# if illegal arguments, print usage to user and exit
-except (getopt.GetoptError, err):
-    print_usage()
-    sys.exit(2)
+# # if illegal arguments, print usage to user and exit
+# except (getopt.GetoptError, err):
+#     print_usage()
+#     sys.exit(2)
 
-# for each option parsed
-for o, a in opts:
-    if o == '-i':
-        document_directory = a
-    elif o == '-d':
-        dictionary_file = a
-    elif o == '-p':
-        postings_file = a
-    else:
-        assert False, "unhandled option"
+# # for each option parsed
+# for o, a in opts:
+#     if o == '-i':
+#         document_directory = a
+#     elif o == '-d':
+#         dictionary_file = a
+#     elif o == '-p':
+#         postings_file = a
+#     else:
+#         assert False, "unhandled option"
 
-# if missing out on an argument, print usage to user and exit
-if document_directory == None or dictionary_file == None or postings_file == None:
-    print_usage()
-    sys.exit(2)
+# # if missing out on an argument, print usage to user and exit
+# if document_directory == None or dictionary_file == None or postings_file == None:
+#     print_usage()
+#     sys.exit(2)
 
-if (RECORD_TIME): start = timeit.default_timer()                              # start time
-index(document_directory, dictionary_file, postings_file)   # call the indexer
-if (RECORD_TIME): stop = timeit.default_timer()                               # stop time
-if (RECORD_TIME): print ('Indexing time:' + str(stop - start))                # print time taken
+# if (RECORD_TIME): start = timeit.default_timer()                              # start time
+# index(document_directory, dictionary_file, postings_file)   # call the indexer
+# if (RECORD_TIME): stop = timeit.default_timer()                               # stop time
+# if (RECORD_TIME): print ('Indexing time:' + str(stop - start))                # print time taken
