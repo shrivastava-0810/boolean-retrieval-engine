@@ -4,7 +4,7 @@ This is a Python implementation of indexing and searching techniques for Boolean
 * [NLTK](http://www.nltk.org/) installed
 * Corpus for indexing and searching with constituent documents named numerically (e.g. Reuters corpus in NLTK data)
 
-## Indexing
+## Dictionary and Postings list files
 `$ python index.py -i <directory-of-documents> -d <dictionary-file> -p <postings-file>`
 * `<directory-of-documents>` is the directory for the collection of documents to be indexed
 * `<dictionary-file>` is the filename of dictionary to be created by indexer
@@ -15,7 +15,7 @@ This is a Python implementation of indexing and searching techniques for Boolean
  * Non-human readable
  * raw bytes where every 4 bytes represents a docID int
 
-## Searching
+## Handling and Boolean Queries
 `$ python search.py -d <dictionary-file> -p <postings-file> -q <file-of-queries> -o <output-file-of-results>`
 * `<dictionary-file>` and `<postings-file>` are created by the indexer as aforementioned
 * `<file-of-queries>` is a text file containing the list of Boolean queries, one for each line
@@ -23,3 +23,6 @@ This is a Python implementation of indexing and searching techniques for Boolean
  * Boolean operators must be given in UPPERCASE
 * `<output-file-of-results>` is the name of the output file for the search results for the given queries
  * For the same line number, each line in `<output-file-of-results>` is a space-delimited list of docIDs (sorted ascending) corresponding to the search result for the corresponding query in `<file-of-queries>`
+ 
+ ## Corpus
+ 3 file namely sherlock.json, witchers.json, bumblebee.json
